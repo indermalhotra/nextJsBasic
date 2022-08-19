@@ -12,8 +12,6 @@ const MeetupDetail = (props) => {
     )
 }
 
-
-
 export const getStaticPaths = () => {
     return{
         fallback:false,
