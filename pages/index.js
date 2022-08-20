@@ -1,20 +1,44 @@
 import MeetupList from "../components/meetups/MeetupList";
+import {MongoClient} from 'mongodb';
+import Head from 'next/head'
+import { Fragment } from "react";
 
-const DUMMY_DATA = [
-    {id:'m1', title:'first meetup', image:'https://thetourguy.com/wp-content/uploads/2019/06/Paris-in-a-Day-780x420.jpg', address:'123 Paris PO box:123455', description: 'This is first meetup'},
-    {id:'m2', title:'second meetup', image:'https://thetourguy.com/wp-content/uploads/2019/06/Paris-in-a-Day-780x420.jpg', address:'123 Japan PO box:123455', description: 'This is second meetup'}
-];
+
 const HomePage = (props) => {
+    console.log(props);
     return (
-        <MeetupList meetups= {props.meetups}/>
+        <Fragment>
+            <Head>
+                <title>First Page</title>
+                <meta name="hello" content="hello ji"></meta>
+            </Head>
+            <MeetupList meetups= {props.meetups}/>
+        </Fragment>
     )
 }
 
 // STATIC GENERATION
 export const getStaticProps = async () => {
+
+    const client = await MongoClient.connect('mongodb+srv://inderpreet:KyCgQ8GITqICdH1x@cluster0.kv1cwcj.mongodb.net/meetups?retryWrites=true&w=majority');
+
+    const db = client.db();
+    const meetupCollection = db.collection('meetups')
+
+    const result = await meetupCollection.find().toArray();
+
+    client.close();
+
     return{
         props:{
-            meetups:DUMMY_DATA
+            meetups:result.map((data) => {
+                return{
+                    title:data.title,
+                    address:data.address,
+                    image:data.image,
+                    id:data._id.toString(),
+                }
+            })
         }
     }
     
